@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartGym (Campus Fitness)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h1>SmartGym Login</h1>
+      <p class="muted">Sign in to open the campus fitness dashboard.</p>
+      <form id="loginForm" class="form-grid single">
+        <input id="loginEmail" type="email" placeholder="admin@campus.edu" required />
+        <input id="loginPassword" type="password" placeholder="Password" required />
+        <button class="btn primary" type="submit">Login</button>
+      </form>
+      <p class="muted tiny">Demo credentials: admin@campus.edu / 123456</p>
+      <p id="loginError" class="error"></p>
+    </div>
+  </section>
+
+  <div id="appRoot" class="layout hidden">
+    <aside class="sidebar">
+      <div class="logo">SmartGym</div>
+      <nav id="sidebarNav" class="sidebar-nav">
+        <a data-route="/" href="/">Dashboard</a>
+        <a data-route="/bookings" href="/bookings">Bookings</a>
+        <a data-route="/classes" href="/classes">Classes</a>
+        <a data-route="/equipment" href="/equipment">Equipment</a>
+        <a data-route="/trainers" href="/trainers">Trainers</a>
+        <a data-route="/workouts" href="/workouts">Workouts</a>
+        <a data-route="/leaderboard" href="/leaderboard">Leaderboard</a>
+        <a data-route="/graphs" href="/graphs">Graphs</a>
+        <a data-route="/admin" href="/admin">Admin</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section class="quick-actions">
+        <button id="scanQrBtn" class="btn light">Scan QR</button>
+        <button id="myQrBtn" class="btn primary">My QR Code</button>
+        <button id="logoutBtn" class="btn light">Logout</button>
+      </section>
+
+      <section id="view-dashboard" class="page-view dashboard-bg">
+        <div class="section-head">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Live campus gym overview</p>
+          </div>
+        </div>
+        <div class="grid-three">
+          <article class="card">
+            <h3>Live Capacity</h3>
+            <div class="meter"><div id="capacityFill"></div></div>
+            <p id="capacityText">0 / 120</p>
+            <p id="capacityStatus" class="muted">-</p>
+          </article>
+          <article class="card">
+            <h3>Maintenance Alerts</h3>
+            <ul id="maintenanceList" class="list"></ul>
+          </article>
+          <article class="card">
+            <h3>Activity Feed</h3>
+            <ul id="eventsList" class="list"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="view-bookings" class="page-view hidden">
+        <div class="section-head">
+          <div>
+            <h1>Bookings</h1>
+            <p>Reserve high-demand equipment</p>
+          </div>
+          <button class="btn primary" id="openBookingPanel">New Booking</button>
+        </div>
+        <div id="bookingPanel" class="panel hidden">
+          <form id="bookingForm" class="form-grid">
+            <div class="qr-select-box">
+              <div class="qr-actions">
+                <button type="button" class="btn light scan-target" data-target="booking">Scan QR for Booking</button>
+                <button type="button" class="btn light enter-code-target" data-target="booking">Enter Code</button>
+              </div>
+              <p id="bookingQrLabel" class="muted tiny">No QR selected</p>
+            </div>
+            <select id="bookingEquipment"></select>
+            <select id="bookingSlot"></select>
+            <button class="btn primary" type="submit">Create Booking</button>
+          </form>
+        </div>
+        <article class="card tall" id="bookingsContent"></article>
+      </section>
+
+      <section id="view-classes" class="page-view hidden">
+        <div class="section-head">
+          <div>
+            <h1>Classes</h1>
+            <p>Browse and register for group fitness classes</p>
+          </div>
+          <button class="btn primary" id="openClassPanel">Add Class</button>
+        </div>
+        <div id="classPanel" class="panel hidden">
+          <form id="addClassForm" class="form-grid">
+            <input id="className" placeholder="Class name" required />
+            <input id="classInstructor" placeholder="Instructor" required />
+            <input id="classCapacity" type="number" min="5" value="20" required />
+            <button class="btn primary" type="submit">Add Class</button>
+          </form>
+          <form id="classRegisterForm" class="form-grid mt-10">
+            <div class="qr-select-box">
+              <div class="qr-actions">
+                <button type="button" class="btn light scan-target" data-target="class">Scan QR for Class</button>
+                <button type="button" class="btn light enter-code-target" data-target="class">Enter Code</button>
+              </div>
+              <p id="classQrLabel" class="muted tiny">No QR selected</p>
+            </div>
+            <select id="classSelect"></select>
+            <button class="btn light" type="submit">Register Student</button>
+          </form>
+        </div>
+        <article class="card tall" id="classesContent"></article>
+      </section>
+
+      <section id="view-equipment" class="page-view hidden">
+        <div class="section-head">
+          <div>
+            <h1>Equipment</h1>
+            <p>Track and manage all gym equipment</p>
+          </div>
+          <button class="btn primary" id="openEquipmentPanel">Add Equipment</button>
+        </div>
+        <div class="toolbar">
+          <input id="equipmentSearch" placeholder="Search equipment..." />
+          <select id="equipmentTypeFilter">
+            <option value="all">All Types</option>
+            <option value="treadmill">Treadmill</option>
+            <option value="bike">Bike</option>
+            <option value="rower">Rower</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div id="equipmentPanel" class="panel hidden">
+          <form id="addEquipmentForm" class="form-grid">
+            <input id="equipName" placeholder="Equipment name" required />
+            <input id="equipType" placeholder="Type (treadmill/bike/rower)" required />
+            <button class="btn primary" type="submit">Add Equipment</button>
+          </form>
+        </div>
+        <div class="panel">
+          <form id="iotForm" class="form-grid">
+            <div class="qr-select-box">
+              <div class="qr-actions">
+                <button type="button" class="btn light scan-target" data-target="iot">Scan QR for IoT</button>
+                <button type="button" class="btn light enter-code-target" data-target="iot">Enter Code</button>
+              </div>
+              <p id="iotQrLabel" class="muted tiny">No QR selected</p>
+            </div>
+            <select id="iotEquipment"></select>
+            <input id="iotMinutes" type="number" min="5" max="90" value="30" />
+            <button class="btn light" type="submit">Log IoT Session</button>
+          </form>
+        </div>
+        <div id="equipmentGrid" class="equipment-grid"></div>
+      </section>
+
+      <section id="view-trainers" class="page-view hidden">
+        <div class="section-head">
+          <div>
+            <h1>Trainers</h1>
+            <p>Manage trainers and sessions</p>
+          </div>
+          <button class="btn primary" id="openTrainerPanel">Add Trainer</button>
+        </div>
+        <div id="trainerPanel" class="panel hidden">
+          <form id="addTrainerForm" class="form-grid">
+            <input id="trainerName" placeholder="Trainer name" required />
+            <input id="trainerSpec" placeholder="Specialization" required />
+            <button class="btn primary" type="submit">Add Trainer</button>
+          </form>
+        </div>
+        <div class="panel">
+          <form id="trainerBookingForm" class="form-grid">
+            <div class="qr-select-box">
+              <div class="qr-actions">
+                <button type="button" class="btn light scan-target" data-target="trainer">Scan QR for Trainer Booking</button>
+                <button type="button" class="btn light enter-code-target" data-target="trainer">Enter Code</button>
+              </div>
+              <p id="trainerQrLabel" class="muted tiny">No QR selected</p>
+            </div>
+            <select id="trainerSelect"></select>
+            <select id="trainerSlot"></select>
+            <button class="btn light" type="submit">Book Trainer</button>
+          </form>
+        </div>
+        <article class="card tall"><ul id="trainerBookings" class="list"></ul></article>
+      </section>
+
+      <section id="view-workouts" class="page-view hidden">
+        <div class="section-head">
+          <div>
+            <h1>Workouts</h1>
+            <p>Log student activity sessions</p>
+          </div>
+          <button class="btn primary" id="openWorkoutPanel">Add Workout</button>
+        </div>
+        <div id="workoutPanel" class="panel hidden">
+          <form id="workoutForm" class="form-grid">
+            <div class="qr-select-box">
+              <div class="qr-actions">
+                <button type="button" class="btn light scan-target" data-target="workout">Scan QR for Workout</button>
+                <button type="button" class="btn light enter-code-target" data-target="workout">Enter Code</button>
+              </div>
+              <p id="workoutQrLabel" class="muted tiny">No QR selected</p>
+            </div>
+            <select id="workoutType">
+              <option value="strength">Strength</option>
+              <option value="cardio">Cardio</option>
+              <option value="mobility">Mobility</option>
+              <option value="hiit">HIIT</option>
+            </select>
+            <input id="workoutDuration" type="number" min="5" max="240" value="45" />
+            <button class="btn primary" type="submit">Log Workout</button>
+          </form>
+        </div>
+        <article class="card tall"><ul id="workoutList" class="list"></ul></article>
+      </section>
+
+      <section id="view-leaderboard" class="page-view hidden">
+        <div class="section-head"><div><h1>Leaderboard</h1><p>Gamification and streak rankings</p></div></div>
+        <article class="leaderboard-board">
+          <div class="leaderboard-banner">LEADERBOARD</div>
+          <div class="leaderboard-head">
+            <span>Rank</span>
+            <span>Name</span>
+            <span>Points</span>
+            <span>Streak</span>
+            <span>Workouts</span>
+          </div>
+          <div id="leaderboardList" class="leaderboard-rows"></div>
+        </article>
+      </section>
+
+      <section id="view-graphs" class="page-view hidden">
+        <div class="section-head">
+          <div><h1>Peak Hours</h1><p>Average daily traffic pattern</p></div>
+          <div class="legend"><span><i class="dot low"></i>Low</span><span><i class="dot med"></i>Medium</span><span><i class="dot high"></i>High</span></div>
+        </div>
+        <article class="card chart-card">
+          <div class="chart-wrap">
+            <div class="y-axis"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+            <div id="barsContainer" class="bars"></div>
+          </div>
+        </article>
+      </section>
+
+      <section id="view-admin" class="page-view hidden">
+        <div class="section-head"><div><h1>Admin</h1><p>Operational recommendations and metrics</p></div></div>
+        <div class="grid-three">
+          <article class="card"><h3>Peak Hour</h3><p id="adminPeak">-</p></article>
+          <article class="card"><h3>Staffing Suggestion</h3><p id="adminStaff">-</p></article>
+          <article class="card"><h3>Active Check-ins</h3><p id="adminCheckins">-</p></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="scanModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Scan QR from Camera</h3>
+        <button id="closeScanModal" class="btn light">Close</button>
+      </div>
+      <video id="scannerVideo" autoplay playsinline muted></video>
+      <p id="scanStatus" class="muted">Waiting to start scanner...</p>
+    </div>
+  </div>
+
+  <div id="myQrModal" class="modal hidden">
+    <div class="modal-card small">
+      <div class="modal-head">
+        <h3>My QR Code</h3>
+        <button id="closeMyQrModal" class="btn light">Close</button>
+      </div>
+      <label>Choose Student</label>
+      <select id="myQrSelect"></select>
+      <div id="qrCanvasWrap" class="qr-wrap"></div>
+      <p id="myQrText" class="muted"></p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

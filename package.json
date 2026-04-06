@@ -1,0 +1,15 @@
+{
+  "name": "smart-gym-campus-fitness",
+  "version": "1.0.0",
+  "description": "Smart Gym backend + frontend prototype with QR booking, IoT simulation, streaks, and gamification",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "node": "^25.9.0",
+    "nodemon": "^3.1.14"
+  }
+}
